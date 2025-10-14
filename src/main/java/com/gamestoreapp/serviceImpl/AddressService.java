@@ -2,10 +2,10 @@ package com.gamestoreapp.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.gamestoreapp.entity.Address;
+import com.gamestoreapp.entity.User;
 import com.gamestoreapp.repository.AddressRepository;
-
+import com.gamestoreapp.repository.UserRepository;
 import java.util.List;
 
 @Service
@@ -14,37 +14,41 @@ public class AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
-    // Add a new address
-    public Address addAddress(Address address) {
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<Address> getAddressesByUser(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return addressRepository.findByUser(user);
+    }
+
+    public Address addAddress(Long userId, Address address) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        address.setUser(user);
         return addressRepository.save(address);
     }
 
-    // Get single address by ID
-    public Address getAddressById(Long id) {
-        return addressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
-    }
+    public Address updateAddress(Long addressId, Address updatedAddress) {
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(() -> new RuntimeException("Address not found"));
 
-    // Get all addresses for a specific user
-    public List<Address> getAddressesByUserId(Long userId) {
-        return addressRepository.findByUserId(userId);
-    }
-
-    // Delete an address
-    public void deleteAddress(Long id) {
-        addressRepository.deleteById(id);
-    }
-
-    // Update an existing address
-    public Address updateAddress(Long id, Address updatedAddress) {
-        Address address = getAddressById(id);
         address.setName(updatedAddress.getName());
-        address.setPhoneNumber(updatedAddress.getPhoneNumber());
-        address.setHouseNo(updatedAddress.getHouseNo());
-        address.setStreet(updatedAddress.getStreet());
+        address.setPhone(updatedAddress.getPhone());
+        address.setHouse(updatedAddress.getHouse());
         address.setLandmark(updatedAddress.getLandmark());
+        address.setStreet(updatedAddress.getStreet());
         address.setCity(updatedAddress.getCity());
-        address.setZipCode(updatedAddress.getZipCode());
+        address.setZip(updatedAddress.getZip());
+
         return addressRepository.save(address);
+    }
+
+    public void deleteAddress(Long addressId) {
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(() -> new RuntimeException("Address not found"));
+        addressRepository.delete(address);
     }
 }
+

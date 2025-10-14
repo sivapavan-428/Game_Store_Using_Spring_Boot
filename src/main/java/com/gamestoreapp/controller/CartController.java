@@ -1,42 +1,112 @@
+//package com.gamestoreapp.controller;
+//
+//import java.util.List;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//
+//import com.gamestoreapp.entity.CartItem;
+//import com.gamestoreapp.serviceImpl.CartService;
+//
+//@RestController
+//@RequestMapping("/cart")
+//@CrossOrigin(origins = "http://localhost:3000")
+//public class CartController {
+//
+//    @Autowired
+//    private CartService cartService;
+//
+////    @GetMapping("/{userId}")
+////    public ResponseEntity<List<CartItem>> getCart(@PathVariable Long userId) {
+////        return ResponseEntity.ok(cartService.getCartItems(userId));
+////    }
+//    
+//    @GetMapping("/user/{userId}")
+//    public List<CartItem> getCart(@PathVariable Long userId) {
+//        return cartService.getCart(userId);
+//    }
+//
+//    @PostMapping("/add")
+//    public CartItem addToCart(@RequestParam Long userId, @RequestParam Long gameId) {
+//        return cartService.addToCart(userId, gameId);
+//    }
+//
+//    @DeleteMapping("/remove")
+//    public void removeFromCart(@RequestParam Long userId, @RequestParam Long gameId) {
+//        cartService.removeFromCart(userId, gameId);
+//    }
+//
+//    @DeleteMapping("/clear/{userId}")
+//    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
+//        cartService.clearCart(userId);
+//        return ResponseEntity.ok("Cart cleared");
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package com.gamestoreapp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.gamestoreapp.entity.Cart;
+import com.gamestoreapp.dto.CartItemDTO;
 import com.gamestoreapp.entity.CartItem;
 import com.gamestoreapp.serviceImpl.CartService;
 
 @RestController
 @RequestMapping("/cart")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
-    // Get cart by user ID
     @GetMapping("/user/{userId}")
-    public Cart getCartByUser(@PathVariable Long userId) {
-        return cartService.getCartByUserId(userId);
+    public List<CartItemDTO> getCart(@PathVariable Long userId) {
+        return cartService.getCart(userId);
     }
 
-    // Add item to cart
-    @PostMapping("/{cartId}/add")
-    public Cart addItem(@PathVariable Long cartId, @RequestBody CartItem item) {
-        return cartService.addGameToCart(cartId, item);
+    @PostMapping("/add")
+    public CartItem addToCart(@RequestParam Long userId, @RequestParam Long gameId) {
+        return cartService.addToCart(userId, gameId);
     }
 
-    // Remove item from cart
-    @DeleteMapping("/{cartId}/remove/{itemId}")
-    public String removeItem(@PathVariable Long cartId, @PathVariable Long itemId) {
-        cartService.removeItemFromCart(cartId, itemId);
-        return "Item removed";
+    @DeleteMapping("/remove")
+    public void removeFromCart(@RequestParam Long userId, @RequestParam Long gameId) {
+        cartService.removeFromCart(userId, gameId);
     }
 
-    // Clear cart for a specific user
     @DeleteMapping("/clear/{userId}")
-    public String clearCart(@PathVariable Long userId) {
-        cartService.clearCartByUser(userId);
-        return "Cart cleared";
+    public ResponseEntity<String> clearCart(@PathVariable Long userId) {
+        cartService.clearCart(userId);
+        return ResponseEntity.ok("Cart cleared");
     }
 }

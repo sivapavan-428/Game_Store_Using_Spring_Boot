@@ -10,6 +10,7 @@ import com.gamestoreapp.serviceImpl.UserService;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired

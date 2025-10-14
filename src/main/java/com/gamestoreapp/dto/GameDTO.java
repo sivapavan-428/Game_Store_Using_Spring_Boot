@@ -1,62 +1,80 @@
-//package com.gamestoreapp.dto;
-//
-//public class GameDTO {
-//    private Long id;
-//    private String title;
-//    private String genre;
-//    private Double price;
-//    private String description;
-//
-//    public GameDTO() {}
-//
-//    public GameDTO(Long id, String title, String genre, Double price, String description) {
-//        this.id = id;
-//        this.title = title;
-//        this.genre = genre;
-//        this.price = price;
-//        this.description = description;
-//    }
-//
-//	public Long getId() {
-//		return id;
-//	}
-//
-//	public void setId(Long id) {
-//		this.id = id;
-//	}
-//
-//	public String getTitle() {
-//		return title;
-//	}
-//
-//	public void setTitle(String title) {
-//		this.title = title;
-//	}
-//
-//	public String getGenre() {
-//		return genre;
-//	}
-//
-//	public void setGenre(String genre) {
-//		this.genre = genre;
-//	}
-//
-//	public Double getPrice() {
-//		return price;
-//	}
-//
-//	public void setPrice(Double price) {
-//		this.price = price;
-//	}
-//
-//	public String getDescription() {
-//		return description;
-//	}
-//
-//	public void setDescription(String description) {
-//		this.description = description;
-//	}
-//
-//    // getters and setters
-//    
-//}
+package com.gamestoreapp.dto;
+
+import java.util.List;
+
+public class GameDTO {
+    private Long id;
+    private String name;
+    private String description;
+    private Double price;
+    private Double discount;
+    private String sectionKey;
+    private List<String> genres;
+    private String imgBase64;
+    
+    public GameDTO() {}
+    
+    public Long getId() { 
+        return id; 
+    }
+    
+    public void setId(Long id) { 
+        this.id = id; 
+    }
+    
+    public String getName() { 
+        return name; 
+    }
+    
+    public void setName(String name) { 
+        this.name = name; 
+    }
+    
+    public String getDescription() { 
+        return description; 
+    }
+    
+    public void setDescription(String description) { 
+        this.description = description; 
+    }
+    
+    public Double getPrice() { 
+        return price; 
+    }
+    
+    public void setPrice(Double price) { 
+        this.price = price; 
+    }
+    
+    public Double getDiscount() { 
+        return discount; 
+    }
+    
+    public void setDiscount(Double discount) { 
+        this.discount = discount; 
+    }
+    
+    public String getSectionKey() { 
+        return sectionKey; 
+    }
+    
+    public void setSectionKey(String sectionKey) { 
+        this.sectionKey = sectionKey; 
+    }
+    
+    public List<String> getGenres() { 
+        return genres; 
+    }
+    
+    public void setGenres(List<String> genres) { 
+        this.genres = genres; 
+    }
+    
+    public String getImgBase64() { 
+        return imgBase64; 
+    }
+    
+    public void setImgBase64(String imgBase64) { 
+        this.imgBase64 = imgBase64; 
+    }
+}

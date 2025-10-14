@@ -1,9 +1,7 @@
 package com.gamestoreapp.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "orders")
@@ -13,96 +11,41 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address shippingAddress;
-
-    @Column(nullable = false)
-    private double totalAmount;
-
-    @Column(nullable = false)
-    private LocalDateTime orderDate;
-
-    @Column(nullable = false)
-    private String status; // e.g., "PENDING", "PAID", "SHIPPED", "DELIVERED"
+    private Long userId;
     
-    public Order() {
-		// TODO Auto-generated constructor stub
-	}
+    private String transactionId;
 
-	public Long getId() {
-		return id;
-	}
+    private Double totalAmount;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    private String paymentMethod;
 
-	public List<OrderItem> getItems() {
-		return items;
-	}
+    private LocalDateTime orderTime;
 
-	public void setItems(List<OrderItem> items) {
-		this.items = items;
-	}
+    public Order() {}
 
-	public User getUser() {
-		return user;
-	}
+    public Order(Long userId, String transactionId, Double totalAmount, String paymentMethod, LocalDateTime orderTime) {
+        this.userId = userId;
+        this.transactionId = transactionId;
+        this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
+        this.orderTime = orderTime;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-	public Address getShippingAddress() {
-		return shippingAddress;
-	}
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
-	public void setShippingAddress(Address shippingAddress) {
-		this.shippingAddress = shippingAddress;
-	}
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
-	public double getTotalAmount() {
-		return totalAmount;
-	}
+    public Double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
 
-	public void setTotalAmount(double totalAmount) {
-		this.totalAmount = totalAmount;
-	}
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
-	public LocalDateTime getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(LocalDateTime orderDate) {
-		this.orderDate = orderDate;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public Order(Long id, List<OrderItem> items, User user, Address shippingAddress, double totalAmount,
-			LocalDateTime orderDate, String status) {
-		super();
-		this.id = id;
-		this.items = items;
-		this.user = user;
-		this.shippingAddress = shippingAddress;
-		this.totalAmount = totalAmount;
-		this.orderDate = orderDate;
-		this.status = status;
-	}
-    
+    public LocalDateTime getOrderTime() { return orderTime; }
+    public void setOrderTime(LocalDateTime orderTime) { this.orderTime = orderTime; }
 }

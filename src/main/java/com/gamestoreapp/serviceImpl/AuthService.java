@@ -1,5 +1,7 @@
 package com.gamestoreapp.serviceImpl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,8 +9,6 @@ import com.gamestoreapp.dto.LoginRequest;
 import com.gamestoreapp.dto.LoginResponse;
 import com.gamestoreapp.entity.User;
 import com.gamestoreapp.repository.UserRepository;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -21,9 +21,9 @@ public class AuthService {
         if (existingUser.isPresent()) {
             throw new RuntimeException("Email already registered!");
         }
-        return userRepository.save(user); 
+        return userRepository.save(user);
     }
-  
+
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -41,3 +41,4 @@ public class AuthService {
         return response;
     }
 }
+

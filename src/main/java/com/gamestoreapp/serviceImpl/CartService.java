@@ -1,16 +1,110 @@
+//package com.gamestoreapp.serviceImpl;
+//
+//import java.util.List;
+//import java.util.Optional;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Service;
+//
+//import com.gamestoreapp.entity.CartItem;
+//import com.gamestoreapp.entity.User;
+//import com.gamestoreapp.entity.Game;
+//import com.gamestoreapp.repository.CartRepository;
+//import com.gamestoreapp.repository.UserRepository;
+//import com.gamestoreapp.repository.GameRepository;
+//
+//@Service
+//public class CartService {
+//
+//    @Autowired
+//    private CartRepository cartRepository;
+//
+//    @Autowired
+//    private UserRepository userRepository;
+//
+//    @Autowired
+//    private GameRepository gameRepository;
+//
+//    public List<CartItem> getCart(Long userId) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//        return cartRepository.findByUser(user);
+//    }
+//
+//    public CartItem addToCart(Long userId, Long gameId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Game game = gameRepository.findById(gameId)
+//                .orElseThrow(() -> new RuntimeException("Game not found"));
+//
+//        if (cartRepository.findByUserAndGame(user, game).isPresent()) {
+//            throw new RuntimeException("Game already in cart");
+//        }
+//
+//        CartItem cartItem = new CartItem();
+//        cartItem.setUser(user);
+//        cartItem.setGame(game);
+//
+//        return cartRepository.save(cartItem);
+//    }
+//
+//    public void removeFromCart(Long userId, Long gameId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Game game = gameRepository.findById(gameId)
+//                .orElseThrow(() -> new RuntimeException("Game not found"));
+//
+//        CartItem cartItem = cartRepository.findByUserAndGame(user, game)
+//                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+//
+//        cartRepository.delete(cartItem);
+//    }
+//
+//    public void clearCart(Long userId) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//        cartRepository.deleteByUser(user);
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package com.gamestoreapp.serviceImpl;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.stereotype.Service;
 
-import com.gamestoreapp.entity.Cart;
 import com.gamestoreapp.entity.CartItem;
 import com.gamestoreapp.entity.Game;
 import com.gamestoreapp.entity.User;
 import com.gamestoreapp.repository.CartRepository;
 import com.gamestoreapp.repository.GameRepository;
 import com.gamestoreapp.repository.UserRepository;
+import com.gamestoreapp.dto.CartItemDTO;
+import com.gamestoreapp.dto.GameDTO;
+
 @Service
 public class CartService {
 
@@ -18,71 +112,61 @@ public class CartService {
     private CartRepository cartRepository;
 
     @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
-    public Cart addGameToCart(Long userId, Long gameId) {
+    @Autowired
+    private GameRepository gameRepository;
+
+    public List<CartItemDTO> getCart(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<CartItem> cartItems = cartRepository.findByUser(user);
+
+        return cartItems.stream().map(item -> {
+            CartItemDTO dto = new CartItemDTO();
+            dto.setId(item.getId());
+            dto.setGameId(item.getGame().getId());
+            dto.setName(item.getGame().getName());
+            dto.setPrice(item.getGame().getPrice());
+            dto.setDiscount(item.getGame().getDiscount());
+            dto.setImgBase64(item.getGame().getImgBase64());
+            return dto;
+        }).toList();
+    }
+
+
+    public CartItem addToCart(Long userId, Long gameId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> new Cart(user));
-
-        boolean exists = cart.getItems().stream()
-                .anyMatch(item -> item.getGame().getId().equals(gameId));
-
-        if (!exists) {
-            CartItem newItem = new CartItem(game, cart);
-            cart.getItems().add(newItem);
+        if (cartRepository.findByUserAndGame(user, game).isPresent()) {
+            throw new RuntimeException("Game already in cart");
         }
 
-        // update total price
-        double total = cart.getItems().stream()
-                .mapToDouble(item -> {
-                    Double discount = item.getGame().getDiscount();
-                    double discountedPrice = (discount != null)
-                            ? item.getGame().getPrice() - (item.getGame().getPrice() * discount / 100)
-                            : item.getGame().getPrice();
-                    return discountedPrice;
-                })
-                .sum();
-
-        cart.setTotalPrice(total);
-        return cartRepository.save(cart);
+        CartItem cartItem = new CartItem(user, game);
+        return cartRepository.save(cartItem);
     }
 
-    public Cart removeGameFromCart(Long userId, Long gameId) {
+    public void removeFromCart(Long userId, Long gameId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        cart.getItems().removeIf(item -> item.getGame().getId().equals(gameId));
+        CartItem cartItem = cartRepository.findByUserAndGame(user, game)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
-     
-        double total = cart.getItems().stream()
-                .mapToDouble(item -> {
-                    Double discount = item.getGame().getDiscount();
-                    double discountedPrice = (discount != null)
-                            ? item.getGame().getPrice() - (item.getGame().getPrice() * discount / 100)
-                            : item.getGame().getPrice();
-                    return discountedPrice;
-                })
-                .sum();
-
-        cart.setTotalPrice(total);
-        return cartRepository.save(cart);
+        cartRepository.delete(cartItem);
     }
 
-    public Cart getCartByUserId(Long userId) {
+    public void clearCart(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+        cartRepository.deleteByUser(user);
     }
 }

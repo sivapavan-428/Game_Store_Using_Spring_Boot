@@ -1,4 +1,3 @@
-
 package com.gamestoreapp.entity;
 
 import java.util.Base64;

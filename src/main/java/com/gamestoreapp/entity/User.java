@@ -28,7 +28,7 @@ public class User {
     private String password;
     
     public User() {
-		// TODO Auto-generated constructor stub
+	
 	}
 
 	public User(Long id, String firstName, String lastName, String email, String password) {

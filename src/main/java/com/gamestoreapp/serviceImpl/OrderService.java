@@ -1,12 +1,18 @@
 package com.gamestoreapp.serviceImpl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gamestoreapp.entity.LibraryItem;
 import com.gamestoreapp.entity.Order;
+import com.gamestoreapp.entity.Game;
+import com.gamestoreapp.repository.LibraryRepository;
 import com.gamestoreapp.repository.OrderRepository;
-
-import java.util.List;
+import com.gamestoreapp.repository.GameRepository;
 
 @Service
 public class OrderService {
@@ -14,31 +20,37 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
+    @Autowired
+    private LibraryRepository libraryRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
+
+    public Order placeOrder(Long userId, String paymentMethod, List<Long> gameIds, Double totalAmount) {
+     
+        String transactionId = UUID.randomUUID().toString();
+
+        Order order = new Order(userId, transactionId, totalAmount, paymentMethod, LocalDateTime.now());
+        Order savedOrder = orderRepository.save(order);
+
+        for (Long gameId : gameIds) {
+            Game game = gameRepository.findById(gameId)
+                    .orElseThrow(() -> new RuntimeException("Game not found with ID: " + gameId));
+            LibraryItem libraryItem = new LibraryItem(userId, game.getId(), game.getName());
+            libraryRepository.save(libraryItem);
+        }
+
+        return savedOrder;
     }
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+    public List<Order> getOrdersByUser(Long userId) {
+        return orderRepository.findAll()
+                .stream()
+                .filter(order -> order.getUserId().equals(userId))
+                .toList();
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<LibraryItem> getLibraryByUser(Long userId) {
+        return libraryRepository.findByUserId(userId);
     }
-
-    public Order updateOrderStatus(Long id, String status) {
-        Order order = getOrderById(id);
-        order.setStatus(status);
-        return orderRepository.save(order);
-    }
-
-    public void cancelOrder(Long id) {
-        orderRepository.deleteById(id);
-    }
-
-	public Order placeOrder(Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
