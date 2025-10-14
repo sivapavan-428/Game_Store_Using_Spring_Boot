@@ -45,8 +45,6 @@ public class UserDTO {
 		this.role = role;
 	}
 
-    // constructors, getters, setters
     public UserDTO() {
-		// TODO Auto-generated constructor stub
 	}
 }

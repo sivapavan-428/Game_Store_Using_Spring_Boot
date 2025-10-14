@@ -1,4 +1,4 @@
-// CartResponseDTO.java
+
 package com.gamestoreapp.dto;
 
 public class CartResponseDTO {
@@ -7,10 +7,8 @@ public class CartResponseDTO {
     private GameDTO game;
     private Integer quantity;
     
-    // Default constructor
     public CartResponseDTO() {}
     
-    // Parameterized constructor
     public CartResponseDTO(Long id, Long userId, GameDTO game, Integer quantity) {
         this.id = id;
         this.userId = userId;
@@ -18,7 +16,6 @@ public class CartResponseDTO {
         this.quantity = quantity;
     }
     
-    // Getters and Setters
     public Long getId() { 
         return id; 
     }
