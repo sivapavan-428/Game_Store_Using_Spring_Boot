@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/profile")
+@RequestMapping("/auth/api/profile")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProfileController {
 

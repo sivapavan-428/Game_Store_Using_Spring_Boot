@@ -10,7 +10,7 @@ import com.gamestoreapp.entity.LibraryItem;
 import com.gamestoreapp.serviceImpl.OrderService;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/auth/order")
 @CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
 

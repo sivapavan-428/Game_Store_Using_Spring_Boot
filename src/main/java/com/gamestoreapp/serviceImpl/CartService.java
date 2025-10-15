@@ -1,10 +1,8 @@
 package com.gamestoreapp.serviceImpl;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.gamestoreapp.entity.CartItem;
 import com.gamestoreapp.entity.Game;
 import com.gamestoreapp.entity.User;
@@ -12,7 +10,6 @@ import com.gamestoreapp.repository.CartRepository;
 import com.gamestoreapp.repository.GameRepository;
 import com.gamestoreapp.repository.UserRepository;
 import com.gamestoreapp.dto.CartItemDTO;
-import com.gamestoreapp.dto.GameDTO;
 
 @Service
 public class CartService {
@@ -44,7 +41,6 @@ public class CartService {
         }).toList();
     }
 
-
     public CartItem addToCart(Long userId, Long gameId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -52,7 +48,8 @@ public class CartService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        if (cartRepository.findByUserAndGame(user, game).isPresent()) {
+        List<CartItem> existingItems = cartRepository.findByUserAndGame(user, game);
+        if (!existingItems.isEmpty()) {
             throw new RuntimeException("Game already in cart");
         }
 
@@ -67,10 +64,12 @@ public class CartService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        CartItem cartItem = cartRepository.findByUserAndGame(user, game)
-                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+        List<CartItem> cartItems = cartRepository.findByUserAndGame(user, game);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Cart item not found");
+        }
 
-        cartRepository.delete(cartItem);
+        cartRepository.deleteAll(cartItems);
     }
 
     public void clearCart(Long userId) {

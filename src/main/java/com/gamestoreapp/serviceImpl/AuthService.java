@@ -3,6 +3,7 @@ package com.gamestoreapp.serviceImpl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gamestoreapp.dto.LoginRequest;
@@ -16,11 +17,17 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
+
     public User registerUser(User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
             throw new RuntimeException("Email already registered!");
         }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -28,7 +35,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
@@ -40,5 +47,14 @@ public class AuthService {
 
         return response;
     }
-}
 
+    public void encodeExistingPasswords() {
+        userRepository.findAll().forEach(user -> {
+      
+            if (!user.getPassword().startsWith("$2a$") && !user.getPassword().startsWith("$2b$")) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                userRepository.save(user);
+            }
+        });
+    }
+}

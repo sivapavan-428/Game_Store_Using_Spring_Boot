@@ -7,7 +7,7 @@ import com.gamestoreapp.serviceImpl.AddressService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/auth/address")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AddressController {
 

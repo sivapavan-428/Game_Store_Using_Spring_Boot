@@ -11,7 +11,7 @@ import com.gamestoreapp.entity.CartItem;
 import com.gamestoreapp.serviceImpl.CartService;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/auth/cart")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CartController {
 

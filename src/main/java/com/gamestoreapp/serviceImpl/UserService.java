@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gamestoreapp.entity.User;
@@ -14,11 +15,14 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
    
 
-    public User registerUser(User user) {
-        return userRepository.save(user);
-    }
+//    public User registerUser(User user) {
+//        return userRepository.save(user);
+//    }
 
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -58,10 +62,16 @@ public class UserService {
         Optional<User> optional = userRepository.findById(id);
         if (optional.isPresent()) {
             User user = optional.get();
-            if (user.getPassword().equals(currentPassword)) {
-                user.setPassword(newPassword);
-                return userRepository.save(user);
+//            if (user.getPassword().equals(currentPassword)) {
+//                user.setPassword(newPassword);
+//                return userRepository.save(user);
+//            }
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                throw new RuntimeException("Current password is incorrect");
             }
+            
+            user.setPassword(passwordEncoder.encode(newPassword));
+            return userRepository.save(user);
         }
         return null;
     }
