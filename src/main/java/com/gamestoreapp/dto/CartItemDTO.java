@@ -6,7 +6,7 @@ public class CartItemDTO {
     private String name;
     private Double price;
     private Double discount;
-    private String imgBase64;
+    private String imgUrl; 
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -23,6 +23,6 @@ public class CartItemDTO {
     public Double getDiscount() { return discount; }
     public void setDiscount(Double discount) { this.discount = discount; }
 
-    public String getImgBase64() { return imgBase64; }
-    public void setImgBase64(String imgBase64) { this.imgBase64 = imgBase64; }
+    public String getImgUrl() { return imgUrl; }
+    public void setImgUrl(String imgUrl) { this.imgUrl = imgUrl; }
 }

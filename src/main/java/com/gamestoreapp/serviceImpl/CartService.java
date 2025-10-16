@@ -36,10 +36,11 @@ public class CartService {
             dto.setName(item.getGame().getName());
             dto.setPrice(item.getGame().getPrice());
             dto.setDiscount(item.getGame().getDiscount());
-            dto.setImgBase64(item.getGame().getImgBase64());
+            dto.setImgUrl(item.getGame().getImgUrl()); // updated field
             return dto;
         }).toList();
     }
+
 
     public CartItem addToCart(Long userId, Long gameId) {
         User user = userRepository.findById(userId)
@@ -78,3 +79,30 @@ public class CartService {
         cartRepository.deleteByUser(user);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

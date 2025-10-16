@@ -29,7 +29,9 @@ public class SecurityConfig {
                     "/webjars/**",
                     "/h2-console/**",
                     "/auth/**",
-                    "/auth/cart/remove/**"
+                    "/auth/cart/remove/**",
+                    "/auth/api/games/uploadImage/**",
+                    "/auth/api/games/add", "/auth/api/games/getAll", "/auth/api/games/get/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )

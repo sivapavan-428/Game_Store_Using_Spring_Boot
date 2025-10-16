@@ -25,7 +25,7 @@ public class OrderItem {
     private Order order;
     
     public OrderItem() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public OrderItem(Long id, Game game, int quantity, double price, Order order) {
