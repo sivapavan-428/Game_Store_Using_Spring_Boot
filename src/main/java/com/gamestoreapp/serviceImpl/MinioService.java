@@ -3,53 +3,70 @@ package com.gamestoreapp.serviceImpl;
 
 import io.minio.*;
 import io.minio.http.Method;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class MinioService {
 
-    @Autowired
-    private MinioClient minioClient;
+    private final MinioClient minioClient;
 
-    private final String bucketName = "games";
+    @Value("${minio.bucket}")
+    private String bucketName;
 
-    public String uploadFile(MultipartFile file) throws Exception {
-       
-        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-        }
+    public MinioService(MinioClient minioClient) {
+        this.minioClient = minioClient;
+    }
 
-        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");;
+    public String uploadFile(MultipartFile file, String folderPrefix) {
+        try {
+            String objectName = folderPrefix + System.currentTimeMillis() + "_" +
+                    file.getOriginalFilename().replaceAll("\\s+", "_");
 
-        try (InputStream is = file.getInputStream()) {
             minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(fileName)
-                        .stream(is, file.getSize(), -1)
-                        .contentType(file.getContentType())
-                        .build()
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType() != null ? file.getContentType() : "application/octet-stream")
+                            .build()
             );
+
+            System.out.println("✅ Uploaded file: " + objectName);
+            return objectName;
+
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Failed to upload file to MinIO", e);
         }
-
-        return fileName;
     }
 
-    public String getFileUrl(String fileName) throws Exception {
-        return minioClient.getPresignedObjectUrl(
-            GetPresignedObjectUrlArgs.builder()
+    public String generatePresignedUrl(String objectName) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .expiry(7, TimeUnit.DAYS)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Failed to generate URL for " + objectName, e);
+        }
+    }
+    
+    public boolean deleteFile(String objectName) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fileName)
-                    .method(Method.GET)
-                    .expiry(7, java.util.concurrent.TimeUnit.DAYS) // valid for 7 days
-                    .build()
-        );
+                    .object(objectName)
+                    .build());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
-
 }
-
