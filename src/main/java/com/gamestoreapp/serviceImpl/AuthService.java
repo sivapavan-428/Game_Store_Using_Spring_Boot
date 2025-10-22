@@ -31,6 +31,23 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+//    public LoginResponse login(LoginRequest request) {
+//        User user = userRepository.findByEmail(request.getEmail())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+//            throw new RuntimeException("Invalid password");
+//        }
+//
+//        LoginResponse response = new LoginResponse();
+//        response.setUserId(user.getId());
+//        response.setEmail(user.getEmail());
+//        response.setFirstName(user.getFirstName());
+//        response.setLastName(user.getLastName());
+//
+//        return response;
+//    }
+    
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -44,9 +61,12 @@ public class AuthService {
         response.setEmail(user.getEmail());
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
+        response.setRole(user.getRole()); // add role
 
+        // token will be set in AuthController
         return response;
     }
+
 
     public void encodeExistingPasswords() {
         userRepository.findAll().forEach(user -> {
